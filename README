@@ -11,3 +11,7 @@ TODO
 ----
  - Adding more functionality such as Followers and Posts
  - Adding tests
+
+I used the following codebase as reference:
+
+php.googleplus - https://github.com/jmstriegel/php.googleplusapi
