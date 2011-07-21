@@ -1,0 +1,13 @@
+﻿# dotnet.googleplus - Google+ API written in .NET
+
+An unofficial Google Plus API. Right now this is pretty limited. Consisting only querying a Google Plus Person and printing out its information. 
+
+Installation 
+------------ 
+
+Make sure that you have Visual Studio.NET 2010 and open the Solution file. Hit F5 and you are good to go. 
+
+TODO
+----
+ - Adding more functionality such as Followers and Posts
+ - Adding tests
