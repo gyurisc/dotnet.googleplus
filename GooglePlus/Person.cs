@@ -6,7 +6,7 @@ using System.Text;
 namespace GooglePlus
 {
     public class Person
-    {
+    {        
         public string ID { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
