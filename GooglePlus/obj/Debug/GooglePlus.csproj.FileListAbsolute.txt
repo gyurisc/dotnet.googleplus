@@ -1,0 +1,10 @@
+C:\Users\Cris\dev\dotnet.googleplus\GooglePlus\bin\Debug\GooglePlus.dll
+C:\Users\Cris\dev\dotnet.googleplus\GooglePlus\bin\Debug\GooglePlus.pdb
+C:\Users\Cris\dev\dotnet.googleplus\GooglePlus\bin\Debug\EntityFramework.dll
+C:\Users\Cris\dev\dotnet.googleplus\GooglePlus\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Cris\dev\dotnet.googleplus\GooglePlus\bin\Debug\EntityFramework.xml
+C:\Users\Cris\dev\dotnet.googleplus\GooglePlus\bin\Debug\Newtonsoft.Json.pdb
+C:\Users\Cris\dev\dotnet.googleplus\GooglePlus\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Cris\dev\dotnet.googleplus\GooglePlus\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Cris\dev\dotnet.googleplus\GooglePlus\obj\Debug\GooglePlus.dll
+C:\Users\Cris\dev\dotnet.googleplus\GooglePlus\obj\Debug\GooglePlus.pdb

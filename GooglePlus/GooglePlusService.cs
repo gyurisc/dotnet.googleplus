@@ -30,7 +30,10 @@ namespace GooglePlus
             p.PictureUrl = GoogleUtils.getFromArray(jsonArray, 1, 2, 3).Value<string>();
             p.ProfileUrl = GoogleUtils.getFromArray(jsonArray, 1, 2, 2).Value<string>();
             p.Introduction = GoogleUtils.getFromArray(jsonArray, 1, 2, 14, 1).Value<string>();
-            p.DataFetched = DateTime.Now; 
+            p.SubHead = GoogleUtils.getFromArray(jsonArray, 1, 2, 33, 1).Value<string>();            
+
+            p.DataCreated = DateTime.Now;
+            p.DataUpdated = DateTime.Now;
 	
             return p;
         }
@@ -73,10 +76,12 @@ namespace GooglePlus
 
             post.ID = GoogleUtils.getFromArray(postJson, 21).Value<string>();
             post.Subject = GoogleUtils.getFromArray(postJson, 4).Value<string>();
+            post.AuthorId = GoogleUtils.getFromArray(postJson, 16).Value<string>();
             post.Author = GoogleUtils.getFromArray(postJson, 3).Value<string>();
-            post.Source = GoogleUtils.getFromArray(postJson, 2).Value<string>();           
+            post.Source = GoogleUtils.getFromArray(postJson, 2).Value<string>();
             
-            post.DataFetched = DateTime.Now; 
+            post.DataCreated = DateTime.Now;
+            post.DataUpdated = DateTime.Now;
             return post; 
         }
 
@@ -93,6 +98,21 @@ namespace GooglePlus
             JArray jsonArray = JArray.Parse(json);
             return ParseListOfUserRefs(jsonArray);
         }
+
+        public List<Connection> GetFollowedConnections(string id)
+        {
+            List<Connection> result = new List<Connection>();
+
+            List<string> followed = GetFollowedIDs(id);
+
+            foreach (string to_id in followed)
+            {
+                Connection c = new Connection(id, to_id);
+                result.Add(c);
+            }
+
+            return result; 
+        }
     
         public List<string> GetFollowerIDs(string id)
         {
@@ -103,6 +123,21 @@ namespace GooglePlus
             JArray jsonArray = JArray.Parse(json);
 
             return ParseListOfUserRefs(jsonArray);
+        }
+
+        public List<Connection> GetFollowerConnections(string id)
+        {
+            List<Connection> result = new List<Connection>();
+
+            List<string> followed = GetFollowerIDs(id);
+
+            foreach (string from_id in followed)
+            {
+                Connection c = new Connection(from_id, id);
+                result.Add(c);
+            }
+
+            return result; 
         }
 
         public List<Post> GetPosts(string id)
