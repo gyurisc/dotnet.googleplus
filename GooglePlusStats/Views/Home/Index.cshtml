@@ -1,0 +1,75 @@
+﻿@model IEnumerable<GooglePlus.Person>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table>
+    <tr>
+        <th>
+            FirstName
+        </th>
+        <th>
+            LastName
+        </th>
+        <th>
+            PictureUrl
+        </th>
+        <th>
+            ProfileUrl
+        </th>
+        <th>
+            Introduction
+        </th>
+        <th>
+            SubHead
+        </th>
+        <th>
+            DataCreated
+        </th>
+        <th>
+            DataUpdated
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.FirstName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.LastName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PictureUrl)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ProfileUrl)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Introduction)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.SubHead)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DataCreated)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DataUpdated)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
+            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
+        </td>
+    </tr>
+}
+
+</table>
