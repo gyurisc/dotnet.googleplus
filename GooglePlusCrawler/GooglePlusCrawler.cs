@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using GooglePlus;
-using System.Data.Entity.Validation; 
+using System.Data.Entity.Validation;
+using System.Diagnostics;
 
 namespace GooglePlusCrawler
 {
@@ -11,12 +12,12 @@ namespace GooglePlusCrawler
     {
         private List<string> visitedIDList = new List<string>();
         private Queue<string> visitingIDList = new Queue<string>();
-        
-        private GooglePlusDb db; 
+
+        private GooglePlusDb db;
 
         public GooglePlusCrawler(GooglePlusDb _db)
         {
-            db = _db; 
+            db = _db;
         }
 
         /// <summary>
@@ -26,20 +27,22 @@ namespace GooglePlusCrawler
         /// <param name="counter"></param>
         public void CrawlPerson(string start_id, int numberOfPersons, bool checkConnections)
         {
-            string current_id; 
+            string current_id;
 
             GooglePlusService gpsvc = new GooglePlusService();
 
             InitializeVisitLists();
 
+            Console.WriteLine("Lists are initialized visited:{0}, visiting:{1}.", visitedIDList.Count, visitingIDList.Count);
+
             if (visitingIDList.Count == 0)
             {
                 // seed the queue with first id 
-                visitingIDList.Enqueue(start_id);                
+                visitingIDList.Enqueue(start_id);
             }
 
             while (numberOfPersons > 0)
-            {                
+            {
                 if (visitingIDList.Count == 0)
                 {
                     break;
@@ -50,7 +53,7 @@ namespace GooglePlusCrawler
                 // did we see this user already
                 if (visitedIDList.Contains(current_id))
                 {
-                    continue;     
+                    continue;
                 }
 
                 if (PersonInDb(current_id))
@@ -58,13 +61,26 @@ namespace GooglePlusCrawler
                     if (!visitedIDList.Contains(current_id))
                     {
                         visitedIDList.Add(current_id);
-                    }      
+                    }
 
-                    continue; 
+                    continue;
                 }
                 else
                 {
+                    Stopwatch sp = new Stopwatch();
+                    sp.Start();
+
                     Person p = gpsvc.GetPerson(current_id);
+
+                    List<Connection> followed = gpsvc.GetFollowedConnections(current_id);
+                    List<Connection> followers = gpsvc.GetFollowerConnections(current_id);
+
+                    if (checkConnections)
+                    {
+                        p.FollowersCount = followers.Count;
+                        p.FollowedByCount = followed.Count;
+                    }
+
 
                     db.Persons.Add(p);
                     db.SaveChanges();
@@ -76,19 +92,20 @@ namespace GooglePlusCrawler
 
                     if (!checkConnections)
                     {
-                        Console.Write(".");
-                        continue; 
+                        sp.Stop();
+                        Console.WriteLine("{0}. {1} added. Followed By {2} users. Following {3} users. {4} ms", numberOfPersons, p.FirstName + " " + p.LastName, followers.Count, followed.Count, sp.ElapsedMilliseconds);
+                        numberOfPersons--;
+                        continue;
                     }
 
-                    List<Connection> followed = gpsvc.GetFollowedConnections(current_id);
-                    ProcessConnections(followed);                     
+                    ProcessConnections(followed);
+                    ProcessConnections(followers);
 
-                    List<Connection> followers = gpsvc.GetFollowerConnections(current_id);
-                    ProcessConnections(followers);            
+                    sp.Stop();
+                    Console.WriteLine("{0}. {1} added. Followed By {2} users. Following {3} users. {4} ms", numberOfPersons, p.FirstName + " " + p.LastName, followers.Count, followed.Count, sp.ElapsedMilliseconds);
+                    numberOfPersons--;
+
                 }
-
-                numberOfPersons--;
-                Console.Write(".");
             }
         }
 
@@ -109,6 +126,11 @@ namespace GooglePlusCrawler
                 {
                     visitingIDList.Enqueue(connection.ToID);
                 }
+
+                if (!visitedIDList.Contains(connection.FromID))
+                {
+                    visitingIDList.Enqueue(connection.FromID);
+                }
             }
         }
 
@@ -116,7 +138,7 @@ namespace GooglePlusCrawler
         {
             if (connections.Count < 1)
             {
-                return; 
+                return;
             }
 
             foreach (Connection con in connections)
@@ -127,24 +149,7 @@ namespace GooglePlusCrawler
                 if (!ConnectionExists(con))
                 {
                     db.Connections.Add(con);
-                    //try
-                    //{
-                        
-                        
-                    //}
-                    //catch (DbEntityValidationException validationException)
-                    //{
-                    //    Console.WriteLine("Saving Connection to db failed for the following reasons: ");
-
-                    //    foreach (DbEntityValidationResult validationResult in validationException.EntityValidationErrors)
-                    //    {
-                    //        foreach (DbValidationError error in validationResult.ValidationErrors)
-                    //        {
-                    //            Console.WriteLine("Error: " + error.ErrorMessage);
-                    //        }
-                    //    }
-                    //}
-                }                
+                }
             }
 
             db.SaveChanges();
@@ -154,20 +159,20 @@ namespace GooglePlusCrawler
         {
             if (!visitingIDList.Contains(con.ToID))
             {
-                return false; 
+                return false;
             }
 
             if (visitedIDList.Contains(con.FromID))
             {
-                return true; 
+                return true;
             }
 
             if (visitingIDList.Contains(con.FromID))
             {
-                return true; 
+                return true;
             }
 
-            return false; 
+            return false;
         }
 
         /// <summary>
@@ -177,7 +182,7 @@ namespace GooglePlusCrawler
         private void RegisterID(string id)
         {
             if (!visitedIDList.Contains(id))
-            {                    
+            {
                 visitingIDList.Enqueue(id);
             }
         }
@@ -185,7 +190,7 @@ namespace GooglePlusCrawler
         private bool PersonInDb(string plus_id)
         {
             Person person = db.Persons.Find(plus_id);
-            return (person == null) ? false : true; 
+            return (person == null) ? false : true;
         }
 
         private bool ConnectionInDb(Connection connection)
@@ -194,7 +199,7 @@ namespace GooglePlusCrawler
                          where (c.ToID == connection.ToID && c.FromID == connection.FromID)
                          select c).ToList().Count;
 
-            return count == 0 ? false : true; 
-        }   
+            return count == 0 ? false : true;
+        }
     }
 }
