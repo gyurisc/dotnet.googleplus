@@ -95,6 +95,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
+
 CREATE TABLE [dbo].[People](
 	[ID] [nvarchar](128) NOT NULL,
 	[FirstName] [nvarchar](max) NULL,
@@ -105,11 +106,14 @@ CREATE TABLE [dbo].[People](
 	[SubHead] [nvarchar](max) NULL,
 	[DataCreated] [datetime] NOT NULL,
 	[DataUpdated] [datetime] NOT NULL,
-PRIMARY KEY CLUSTERED 
+	[FollowersCount] [int] NOT NULL CONSTRAINT [DF_People_FollowersCount]  DEFAULT ((0)),
+	[FollowedByCount] [int] NOT NULL CONSTRAINT [DF_People_FollowedByCount]  DEFAULT ((0)),
+ CONSTRAINT [PK__People__7E6CC920] PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
+
 GO
 /****** Object:  Table [dbo].[EdmMetadata]    Script Date: 08/10/2011 16:46:02 ******/
 SET ANSI_NULLS ON
